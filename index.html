@@ -51,10 +51,8 @@
     </div>
 
     <script>
-        const d1 = "08dj6iq8dj";
-        const d2 = "execute-api.eu-central-1";
-        const d3 = ["amazonaws", "com", "views"].join(".");
-        fetch("https://" + d1 + "." + d2 + "." + d3.replace(".views", "/views"))
+        const host = "moc.swanozama".split("").reverse().join("");
+        fetch("https://08dj6iq8dj.execute-api.eu-central-1." + host + "/views")
             .then(res => res.json())
             .then(data => document.getElementById('counter').innerText = data.views)
             .catch(() => document.getElementById('counter').innerText = 'Fout');
