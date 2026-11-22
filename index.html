@@ -8,11 +8,42 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header, profiel, projecten, ervaring en vaardigheden secties -->
         <header>
             <h1>Sven Landveld</h1>
             <p>Cloud & IT Specialist | Mijdrecht, Nederland</p>
+            <p>E-mail: svenlandveld@hotmail.com | LinkedIn: ://linkedin.com</p>
         </header>
+
+        <section>
+            <h2>Profiel</h2>
+            <p>Enthousiaste en leergierige IT-professional met praktijkervaring in AWS Cloud-architectuur, serverless applicaties en geautomatiseerde CI/CD-pipelines.</p>
+        </section>
+
+        <section>
+            <h2>Cloud Projecten</h2>
+            <h3>AWS Cloud Resume Challenge</h3>
+            <ul>
+                <li>Serverless webapplicatie met <strong>Amazon S3</strong>, <strong>CloudFront</strong>, <strong>API Gateway</strong>, <strong>AWS Lambda</strong> en <strong>DynamoDB</strong>.</li>
+                <li>Geautomatiseerde deployment-pipeline met <strong>GitHub Actions</strong> en <strong>AWS IAM</strong>.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Werkervaring</h2>
+            <h3>Ho Slayer — OTS</h3>
+            <p><em>2024 – Heden</em></p>
+            <ul>
+                <li>Verantwoordelijk voor dagelijkse operationele werkzaamheden, kwaliteitscontrole en procesverbetering.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Vaardigheden</h2>
+            <ul>
+                <li><strong>Cloud & DevOps:</strong> AWS (S3, CloudFront, Lambda, DynamoDB, API Gateway, SES, IAM), Git, GitHub Actions</li>
+                <li><strong>Talen & Web:</strong> Python, HTML5, CSS3, JavaScript</li>
+            </ul>
+        </section>
 
         <section>
             <h2>Contact opnemen</h2>
@@ -31,10 +62,47 @@
     </div>
 
     <script>
-        // De volledige HTML-code inclusief de JavaScript-logica voor de bezoekersteller en het contactformulier is te vinden in de broncode.
         const host = "moc.swanozama".split("").reverse().join("");
         const baseUrl = "https://execute-api.eu-central-1." + host;
-        // ... (volledige scriptlogica voor API-requests naar /views en /contact)
+
+        fetch(baseUrl + "/views")
+            .then(res => res.json())
+            .then(data => document.getElementById('counter').innerText = data.views)
+            .catch(() => document.getElementById('counter').innerText = 'Fout');
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const knop = document.getElementById('verzend-knop');
+            const status = document.getElementById('form-status');
+            knop.disabled = true;
+            status.innerText = "Bezig met verzenden...";
+
+            fetch(baseUrl + "/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    naam: document.getElementById('naam').value,
+                    email: document.getElementById('email').value,
+                    bericht: document.getElementById('bericht').value
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status) {
+                    status.innerText = "Bericht succesvol verzonden!";
+                    status.style.color = "#15803d";
+                    document.getElementById('contact-form').reset();
+                } else {
+                    status.innerText = "Fout bij verzenden: " + (data.fout || "Onbekend");
+                    status.style.color = "#b91c1c";
+                }
+            })
+            .catch(() => {
+                status.innerText = "Netwerkfout bij verzenden.";
+                status.style.color = "#b91c1c";
+            })
+            .finally(() => { knop.disabled = false; });
+        });
     </script>
 </body>
 </html>
