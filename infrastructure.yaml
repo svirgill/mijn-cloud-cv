@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Medior IaC Opdracht - Serverless Visitor Logger (DynamoDB + IAM + Lambda)
+
+Resources:
+  VisitorLogTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: cv-bezoekers-log
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: visit_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: visit_id
+          KeyType: HASH
+
+  LoggerLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: cv-log-writer-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ://amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: LeastPrivilegeDynamoAndLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - dynamodb:PutItem
+                Resource: !GetAtt VisitorLogTable.Arn
+
+  VisitorLoggerFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: cv-log-writer
+      Runtime: python3.12
+      Handler: index.lambda_handler
+      Role: !GetAtt LoggerLambdaRole.Arn
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref VisitorLogTable
+      Code:
+        ZipFile: |
+          import os, json, uuid, boto3
+          from datetime import datetime, timezone
+
+          ddb = boto3.resource('dynamodb')
+          table = ddb.Table(os.environ['TABLE_NAME'])
+
+          def lambda_handler(event, context):
+              item = {
+                  'visit_id': str(uuid.uuid4()),
+                  'timestamp': datetime.now(timezone.utc).isoformat()
+              }
+              table.put_item(Item=item)
+              return {'statusCode': 200, 'body': json.dumps(item)}
+
+Outputs:
+  TableArn:
+    Description: ARN van de nieuwe DynamoDB tabel
+    Value: !GetAtt VisitorLogTable.Arn
+  FunctionName:
+    Description: Naam van de gedeployde Lambda functie
+    Value: !Ref VisitorLoggerFunction
