@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mijn Cloud CV</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Jouw Naam</h1>
+            <p>Cloud & IT Specialist | Mijdrecht / Nederland</p>
+        </header>
+
+        <section>
+            <h2>Profiel</h2>
+            <p>Enthousiaste IT-professional met focus op AWS Cloud, automatisering en schaalbare infrastructuur.</p>
+        </section>
+
+        <section>
+            <h2>Vaardigheden</h2>
+            <ul>
+                <li>AWS (S3, CloudFront, Lambda, DynamoDB, IAM)</li>
+                <li>Python, HTML/CSS, Git & GitHub</li>
+            </ul>
+        </section>
+
+        <footer>
+            <p>Aantal bezoekers: <span id="counter">Laden...</span></p>
+        </footer>
+    </div>
+
+    <script>
+        fetch("https://08dj6iq8dj.execute-api.eu-central-1.amazonaws.com/views")
+            .then(response => response.json())
+            .then(data => { document.getElementById('counter').innerText = data.views; })
+            .catch(error => { document.getElementById('counter').innerText = 'Fout'; });
+    </script>
+</body>
+</html>
