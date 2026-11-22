@@ -62,8 +62,9 @@
     </div>
 
     <script>
+        const apiId = "jd8qi6jd80".split("").reverse().join("");
         const host = "moc.swanozama".split("").reverse().join("");
-        const baseUrl = "https://execute-api.eu-central-1." + host;
+        const baseUrl = "https://" + apiId + ".execute-api.eu-central-1." + host;
 
         fetch(baseUrl + "/views")
             .then(res => res.json())
