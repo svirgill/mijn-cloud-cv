@@ -1,0 +1,27 @@
+name: Deploy CV naar AWS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Code ophalen van GitHub
+        uses: actions/checkout@v4
+
+      - name: Inloggen bij AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+
+      - name: Upload bestanden naar S3
+        run: aws s3 sync . s3://cv-website-jouwnaam-2026 --exclude ".git/*" --exclude ".github/*"
+
+      - name: CloudFront cache verversen
+        run: |
+          DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?DomainName=='d2enpx5yzu0ayk.cloudfront.net'].Id" --output text)
+          aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/*"
