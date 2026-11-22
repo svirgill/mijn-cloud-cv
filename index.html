@@ -24,6 +24,7 @@
             <h3>AWS Cloud Resume Challenge</h3>
             <ul>
                 <li>Serverless webapplicatie met <strong>Amazon S3</strong>, <strong>CloudFront</strong>, <strong>API Gateway</strong>, <strong>AWS Lambda</strong> en <strong>DynamoDB</strong>.</li>
+                <li>Geautomatiseerde deployment-pipeline met <strong>GitHub Actions</strong> en <strong>AWS IAM</strong>.</li>
             </ul>
         </section>
 
@@ -50,9 +51,10 @@
     </div>
 
     <script>
-        const deel1 = "08dj6iq8dj";
-        const deel2 = "execute-api.eu-central-1";
-        fetch("https://" + deel1 + "." + deel2 + "://")
+        const d1 = "08dj6iq8dj";
+        const d2 = "execute-api.eu-central-1";
+        const d3 = ["amazonaws", "com", "views"].join(".");
+        fetch("https://" + d1 + "." + d2 + "." + d3.replace(".views", "/views"))
             .then(res => res.json())
             .then(data => document.getElementById('counter').innerText = data.views)
             .catch(() => document.getElementById('counter').innerText = 'Fout');
